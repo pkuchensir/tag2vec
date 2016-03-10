@@ -11,7 +11,8 @@
 
 #include "util/logging.h"
 
-namespace search {
+namespace deeplearning {
+namespace embedding {
 namespace util {
 namespace {
 
@@ -103,4 +104,5 @@ void TraversePath(const std::string& path,
 }
 
 }  // namespace util
-}  // namespace search
+}  // namespace embedding
+}  // namespace deeplearning

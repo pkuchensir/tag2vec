@@ -5,7 +5,8 @@
 
 #include "util/logging.h"
 
-namespace search {
+namespace deeplearning {
+namespace embedding {
 namespace util {
 namespace {
 
@@ -87,13 +88,14 @@ void TestUtil(const std::string& base_path) {
   TestTraversePath(base_path);
 }
 
-}  // namespace search
-}  // namespace util
 }  // namespace
+}  // namespace util
+}  // namespace embedding
+}  // namespace deeplearning
 
 int main(int argc, char** argv) {
-  std::string base_path = search::util::BasePath(argv[0]);
-  search::util::TestUtil(base_path);
+  std::string base_path = deeplearning::embedding::util::BasePath(argv[0]);
+  deeplearning::embedding::util::TestUtil(base_path);
   LOG(INFO) << "PASS";
   return 0;
 }

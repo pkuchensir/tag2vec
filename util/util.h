@@ -5,7 +5,8 @@
 #include <string>
 #include <vector>
 
-namespace search {
+namespace deeplearning {
+namespace embedding {
 namespace util {
 
 // Gets the base path of file_path. '/' will be preferred to be added to back.
@@ -37,6 +38,8 @@ void TraversePath(const std::string& path,
                   const std::function<void(const std::string&)>& func);
 
 }  // namespace util
-}  // namespace search
+}  // namespace embedding
+}  // namespace deeplearning
+
 
 #endif  // UTIL_UTIL_H_

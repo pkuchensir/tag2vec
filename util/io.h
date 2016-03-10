@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 
 namespace deeplearning {
 namespace embedding {
@@ -15,6 +16,11 @@ void ReadBasicItem(std::istream* in, BasicType* item);
 
 void WriteString(std::ostream* out, const std::string& str);
 void ReadString(std::istream* in, std::string* str);
+
+template <typename BasicType>
+void WriteBasicItemVector(std::ostream* out, const std::vector<BasicType>& v);
+template <typename BasicType>
+void ReadBasicItemVector(std::istream* in, std::vector<BasicType>* v);
 
 }  // namespace util
 }  // namespace embedding
