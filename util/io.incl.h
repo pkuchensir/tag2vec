@@ -32,7 +32,10 @@ void ReadBasicItemVector(std::istream* in, std::vector<BasicType>* v) {
   ReadBasicItem(in, &v_size);
   v->resize(v_size);
   for (size_t i = 0; i < v_size; ++i) {
-    ReadBasicItem(in, &(*v)[i]);
+    // In case of vector<bool>, (*v)[i] should be stored in a temporal item first.
+    BasicType item = (*v)[i];
+    ReadBasicItem(in, &item);
+    (*v)[i] = item;
   }
 }
 

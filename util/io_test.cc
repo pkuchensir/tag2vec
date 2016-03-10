@@ -23,31 +23,23 @@ void TestIO() {
   WriteBasicItemVector(&oss, d);
 
   std::istringstream iss(oss.str());
-  {
-    float ax;
-    ReadBasicItem(&iss, &ax);
-    CHECK_EQ(a, ax) << "`ax` mismatched.";
-  }
+  float ax;
+  ReadBasicItem(&iss, &ax);
+  CHECK_EQ(a, ax) << "ax mismatched.";
 
-  {
-    size_t bx;
-    ReadBasicItem(&iss, &bx);
-    CHECK_EQ(b, bx) << "`bx` mismatched.";
-  }
+  size_t bx;
+  ReadBasicItem(&iss, &bx);
+  CHECK_EQ(b, bx) << "bx mismatched.";
 
-  {
-    std::string cx;
-    ReadString(&iss, &cx);
-    CHECK_EQ(c, cx) << "`cx` mismatched.";
-  }
+  std::string cx;
+  ReadString(&iss, &cx);
+  CHECK_EQ(c, cx) << "cx mismatched.";
 
-  {
-    std::vector<int> dx;
-    ReadBasicItemVector(&iss, &dx);
-    CHECK_EQ(d.size(), dx.size()) << "Size of `dx` mismatched.";
-    for (size_t i = 0; i < d.size(); ++i) {
-      CHECK_EQ(d[i], dx[i]) << "`dx[" << i << "]` mismatched.";
-    }
+  std::vector<int> dx;
+  ReadBasicItemVector(&iss, &dx);
+  CHECK_EQ(d.size(), dx.size()) << "Size of dx mismatched.";
+  for (size_t i = 0; i < d.size(); ++i) {
+    CHECK_EQ(d[i], dx[i]) << "dx[" << i << "] mismatched.";
   }
 }
 
