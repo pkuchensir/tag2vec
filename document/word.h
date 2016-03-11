@@ -6,47 +6,29 @@
 #include <utility>
 #include <vector>
 
+#include "document/vocabulary.h"
+
 namespace deeplearning {
 namespace embedding {
 
-class Word {
- public:
-  size_t index_;
-  size_t count_;
-  std::string text_;
-  float sample_probability_;
-
-  std::vector<bool>* codes_ = nullptr;
-  std::vector<size_t>* points_ = nullptr;
-
+class Word : public Vocabulary::Item {
  public:
   Word() = default;
+  Word(const std::string& text) : Word(0, 1, text) {}
+  Word(std::string&& text) : Word(0, 1, std::move(text)) {}
   Word(size_t index, size_t count, const std::string& text)
-      : Word(index, count, text, 0) {}
+      : Word(index, count, text, 1) {}
   Word(size_t index, size_t count, std::string&& text)
-      : Word(index, count, text, 0) {}
-  Word(size_t index, size_t count, const std::string& text, float sample_probability)
-      : index_(index),
-        count_(count),
-        text_(text),
+      : Word(index, count, std::move(text), 1) {}
+  Word(size_t index, size_t count, const std::string& text,
+       float sample_probability)
+      : Vocabulary::Item(index, count, std::move(text)),
         sample_probability_(sample_probability) {}
   Word(size_t index, size_t count, std::string&& text, float sample_probability)
-      : index_(index),
-        count_(count),
-        text_(std::move(text)),
+      : Vocabulary::Item(index, count, text),
         sample_probability_(sample_probability) {}
 
   ~Word();
-
-  size_t index() const { return index_; }
-  void set_index(size_t index) { index_ = index; }
-
-  size_t count() const { return count_; }
-  void set_count(size_t count) { count_ = count; }
-
-  const std::string& text() const { return text_; }
-  void set_text(const std::string& text) { text_ = text; }
-  void set_text(std::string&& text) { text_ = std::move(text); }
 
   float sample_probability() const { return sample_probability_; }
   void set_sample_probability(float sample_probability) {
@@ -63,6 +45,15 @@ class Word {
 
   void Write(std::ostream* out);
   static void Read(std::istream* in, Word* word);
+
+ private:
+  size_t index_;
+  size_t count_;
+  std::string text_;
+  float sample_probability_;
+
+  std::vector<bool>* codes_ = nullptr;
+  std::vector<size_t>* points_ = nullptr;
 };
 
 }  // namespace embedding

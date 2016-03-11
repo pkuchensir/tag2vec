@@ -1,5 +1,5 @@
-#ifndef DOCUMENT_WORD_H_
-#define DOCUMENT_WORD_H_
+#ifndef DOCUMENT_VOCABULARY_H_
+#define DOCUMENT_VOCABULARY_H_
 
 #include <iostream>
 #include <string>
@@ -15,26 +15,44 @@ class Vocabulary {
   class Item;
 
  public:
+  Item* item(size_t index) { return items_[index]; }
   const Item* item(size_t index) const { return items_[index]; }
   const Item* item(const std::string& item) const {
     auto it = item_hash_.find(item);
     return it != item_hash_.end() ? it->second : nullptr;
   }
+  const size_t total_items() const { return total_items_; }
+
+  template <class ItemSubType>
+  void AddItem(const std::string& item);
+
+  void Build(size_t min_count);
 
   void Write(std::ostream* out) const;
   static void Read(std::istream* in, Vocabulary* item);
 
  private:
+  bool CheckEmpty() const;
+
+ private:
+  size_t total_items_ = 0;
   std::vector<Item*> items_;
   std::unordered_map<std::string, Item*> item_hash_;
+
+  bool has_built = false;
 };
 
 class Vocabulary::Item {
  public:
+  Item() = default;
+  Item(const std::string& text) : index_(0), count_(1), text_(text) {}
+  Item(std::string&& text) : index_(0), count_(1), text_(std::move(text)) {}
   Item(size_t index, size_t count, const std::string& text)
       : index_(index), count_(count), text_(text) {}
   Item(size_t index, size_t count, std::string&& text)
       : index_(index), count_(count), text_(std::move(text)) {}
+
+  virtual ~Item() = default;
 
   size_t index() const { return index_; }
   void set_index(size_t index) { index_ = index; }
@@ -58,4 +76,6 @@ class Vocabulary::Item {
 }  // namespace embedding
 }  // namespace deeplearning
 
-#endif  // DOCUMENT_WORD_H_
+#include "document/vocabulary.incl.h"
+
+#endif  // DOCUMENT_VOCABULARY_H_

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 
+#include "document/vocabulary.h"
 #include "util/io.h"
 
 namespace deeplearning {
@@ -19,10 +20,8 @@ void Word::InitHsNode() {
 }
 
 void Word::Write(std::ostream* out) {
-  util::WriteBasicItem(out, index_);
-  util::WriteBasicItem(out, count_);
+  Vocabulary::Item::Write(out);
   util::WriteBasicItem(out, sample_probability_);
-  util::WriteString(out, text_);
 
   bool has_codes = codes_;
   util::WriteBasicItem(out, has_codes);
@@ -38,10 +37,8 @@ void Word::Write(std::ostream* out) {
 }
 
 void Word::Read(std::istream* in, Word* word) {
-  util::ReadBasicItem(in, &word->index_);
-  util::ReadBasicItem(in, &word->count_);
+  Vocabulary::Item::Read(in, word);
   util::ReadBasicItem(in, &word->sample_probability_);
-  util::ReadString(in, &word->text_);
 
   bool has_codes;
   util::ReadBasicItem(in, &has_codes);
