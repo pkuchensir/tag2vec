@@ -48,7 +48,7 @@ class Vocabulary final {
   std::vector<Item*> items_;
   std::unordered_map<std::string, Item*> item_hash_;
 
-  bool has_built = false;
+  bool has_built_ = false;
 };
 
 class Vocabulary::Item {

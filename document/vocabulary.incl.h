@@ -11,7 +11,7 @@ namespace embedding {
 
 template <class ItemSubClass>
 void Vocabulary::AddItem(const std::string& item) {
-  CHECK(!has_built) << "This vocabulary has already been built.";
+  CHECK(!has_built_) << "Vocabulary has already been built.";
   auto it = item_hash_.find(item);
   if (it != item_hash_.end()) {
     Item* item_ptr = it->second;
@@ -23,7 +23,7 @@ void Vocabulary::AddItem(const std::string& item) {
 
 template <class ItemSubClass>
 void Vocabulary::Read(std::istream* in, Vocabulary* vocabulary) {
-  CHECK(vocabulary->CheckEmpty()) << "vocabulary should be empty.";
+  CHECK(vocabulary->CheckEmpty()) << "Vocabulary should be empty.";
   util::ReadBasicItem(in, &vocabulary->total_items_);
   size_t items_size;
   util::ReadBasicItem(in, &items_size);
@@ -34,6 +34,7 @@ void Vocabulary::Read(std::istream* in, Vocabulary* vocabulary) {
     vocabulary->item_hash_[vocabulary->items_[i]->text()] =
         vocabulary->items_[i];
   }
+  vocabulary->has_built_ = true;
 }
 
 }  // namespace embedding

@@ -17,8 +17,8 @@ Vocabulary::~Vocabulary() {
 }
 
 void Vocabulary::Build(size_t min_count) {
-  CHECK(!has_built) << "This vocabulary has already been built.";
-  has_built = true;
+  CHECK(!has_built_) << "Vocabulary has already been built.";
+  has_built_ = true;
 
   size_t num_original_items = 0;
   std::vector<Item*> to_remove_items;
@@ -53,6 +53,7 @@ void Vocabulary::Build(size_t min_count) {
 }
 
 void Vocabulary::Write(std::ostream* out) const {
+  CHECK(has_built_) << "Vocabulary has not been built.";
   util::WriteBasicItem(out, total_items_);
   size_t items_size = items_.size();
   util::WriteBasicItem(out, items_size);
@@ -67,12 +68,13 @@ void Vocabulary::Clear() {
   }
   items_.clear();
   item_hash_.clear();
-  has_built = false;
+  has_built_ = false;
+  total_items_ = 0;
 }
 
 bool Vocabulary::CheckEmpty() const {
   return total_items_ == 0 && items_.empty() && item_hash_.empty() &&
-         !has_built;
+         !has_built_;
 }
 
 void Vocabulary::Item::Write(std::ostream* out) const {
