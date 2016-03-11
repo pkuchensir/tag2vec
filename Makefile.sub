@@ -1,0 +1,27 @@
+all:
+	cd .. && $(MAKE)
+
+SOURCE_DIR = \
+$(shell find . -type d \( ! -path '*/.*' -o -prune \) \( ! -name ".*" \))
+
+EXISTED_DEPS = \
+$(wildcard *.d) $(foreach dir,$(SOURCE_DIR),$(wildcard $(dir)/*.d))
+EXISTED_OBJS = \
+$(wildcard *.o) $(foreach dir,$(SOURCE_DIR),$(wildcard $(dir)/*.o))
+EXISTED_TESTS = \
+$(wildcard *test) $(foreach dir,$(SOURCE_DIR),$(wildcard $(dir)/*test))
+EXISTED_MAINS = \
+$(wildcard *main) $(foreach dir,$(SOURCE_DIR),$(wildcard $(dir)/*main))
+
+clean:
+	@echo Removing Main Objects.
+	@$(RM) $(EXISTED_MAINS)
+	@echo Removing Test Objects.
+	@$(RM) $(EXISTED_TESTS)
+	@echo Removing Object Files.
+	@$(RM) $(EXISTED_OBJS)
+	@echo Removing Dependency Files.
+	@$(RM) $(EXISTED_DEPS)
+	@echo All Clean.
+
+.PHONY: all clean
