@@ -1,7 +1,8 @@
 #include "document/vocabulary.h"
 
 #include <algorithm>
-#include <iostream>
+#include <ostream>
+#include <vector>
 
 #include "util/io.h"
 #include "util/logging.h"
@@ -17,7 +18,9 @@ void Vocabulary::Build(size_t min_count) {
   std::vector<Item*> to_remove_items;
   for (const auto& key_item : item_hash_) {
     Item* item = key_item.second;
-    to_remove_items.push_back(item);
+    if (item->count() < min_count) {
+      to_remove_items.push_back(item);
+    }
     num_original_items += item->count();
   }
 
@@ -49,19 +52,6 @@ void Vocabulary::Write(std::ostream* out) const {
   util::WriteBasicItem(out, items_size);
   for (Item* item : items_) {
     item->Write(out);
-  }
-}
-
-void Vocabulary::Read(std::istream* in, Vocabulary* vocabulary) {
-  CHECK(vocabulary->CheckEmpty()) << "vocabulary should be empty.";
-  util::ReadBasicItem(in, &vocabulary->total_items_);
-  size_t items_size;
-  util::ReadBasicItem(in, &items_size);
-  vocabulary->items_.resize(items_size);
-  for (size_t i = 0; i < items_size; ++i) {
-    Item::Read(in, vocabulary->items_[i]);
-    vocabulary->item_hash_[vocabulary->items_[i]->text()] =
-        vocabulary->items_[i];
   }
 }
 

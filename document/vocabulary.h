@@ -22,14 +22,17 @@ class Vocabulary {
     return it != item_hash_.end() ? it->second : nullptr;
   }
   const size_t total_items() const { return total_items_; }
+  const size_t items_size() const { return items_.size(); }
 
-  template <class ItemSubType>
+  template <class ItemSubClass>
   void AddItem(const std::string& item);
 
   void Build(size_t min_count);
 
   void Write(std::ostream* out) const;
-  static void Read(std::istream* in, Vocabulary* item);
+
+  template <class ItemSubClass>
+  static void Read(std::istream* in, Vocabulary* vocabulary);
 
  private:
   bool CheckEmpty() const;

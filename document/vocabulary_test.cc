@@ -2,6 +2,7 @@
 
 #include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "util/logging.h"
@@ -10,66 +11,70 @@ namespace deeplearning {
 namespace embedding {
 namespace {
 
-  /*
-void CheckEqWord(const Word& expect, const Word& actual) {
-  CHECK_EQ(expect.index(), actual.index()) << "index mismatched.";
-  CHECK_EQ(expect.count(), actual.count()) << "count mismatched.";
-  CHECK_EQ(expect.text(), actual.text()) << "text mismatched.";
-  CHECK_EQ(expect.sample_probability(), actual.sample_probability())
-      << "sample_probability mismatched.";
-
-  if (expect.codes() && actual.codes()) {
-    CHECK_EQ(expect.codes()->size(), actual.codes()->size())
-        << "Size of codes mismatched.";
-    for (size_t i = 0; i < expect.codes()->size(); ++i) {
-      CHECK_EQ((*expect.codes())[i], (*actual.codes())[i]) << "codes[" << i
-                                                           << "] mismatched.";
-    }
-  } else {
-    CHECK(expect.codes() == nullptr && actual.codes() == nullptr)
-        << "Existence of cores mismatched.";
+Vocabulary BuildVocabulary(const std::vector<std::string>& items,
+                           size_t min_count) {
+  Vocabulary vocabulary;
+  for (const std::string& item : items) {
+    vocabulary.AddItem<Vocabulary::Item>(item);
   }
+  vocabulary.Build(min_count);
+  return vocabulary;
+}
 
-  if (expect.points() && actual.points()) {
-    CHECK_EQ(expect.points()->size(), actual.points()->size())
-        << "Size of points mismatched.";
-    for (size_t i = 0; i < expect.points()->size(); ++i) {
-      CHECK_EQ((*expect.points())[i], (*actual.points())[i]) << "points[" << i
-                                                             << "] mismatched.";
-    }
-  } else {
-    CHECK(expect.points() == nullptr && actual.points() == nullptr)
-        << "Existence of cores mismatched.";
+void CheckVocabulary(
+    const Vocabulary& vocabulary,
+    std::vector<std::pair<std::string, size_t>> item_count_vec) {
+  size_t total_count = 0;
+  for (const auto& item_count : item_count_vec) {
+    total_count += item_count.second;
   }
+  CHECK_EQ(total_count, vocabulary.total_items()) << "total_items mismatched.";
+  CHECK_EQ(item_count_vec.size(), vocabulary.items_size())
+      << "items_size mismatched.";
+  for (size_t i = 0; i < item_count_vec.size(); ++i) {
+    const Vocabulary::Item* item = vocabulary.item(i);
+    CHECK_EQ(i, item->index()) << "index mismatched.";
+    CHECK_EQ(item_count_vec[i].first, item->text()) << "text mismatched.";
+    CHECK_EQ(item_count_vec[i].second, item->count()) << "count mismatched.";
+    CHECK_EQ(item, vocabulary.item(item->text())) << "item mismatched.";
+  }
+}
+
+void TestVocabularyBuild() {
+  Vocabulary vocabulary = BuildVocabulary({"b", "c", "b", "a", "c", "c"}, 0);
+  std::vector<std::pair<std::string, size_t>> item_count_vec = {
+      std::make_pair("c", 3), std::make_pair("b", 2), std::make_pair("a", 1)};
+  CheckVocabulary(vocabulary, item_count_vec);
+
+  vocabulary = BuildVocabulary({"b", "c", "b", "a", "c", "c"}, 2);
+  item_count_vec = {std::make_pair("c", 3), std::make_pair("b", 2)};
+  CheckVocabulary(vocabulary, item_count_vec);
 }
 
 void TestVocabularyIO() {
   std::ostringstream oss;
-  Word w1(123, 456, "abc", 9.4);
-  w1.Write(&oss);
-  Word w2(456, 123, "zyx", 10.3);
-  w2.Write(&oss);
+  Vocabulary vocabulary = BuildVocabulary({"b", "c", "b", "a", "c", "c"}, 0);
+  vocabulary.Write(&oss);
 
   std::istringstream iss(oss.str());
-  Word w1x;
-  Word::Read(&iss, &w1x);
-  CheckEqWord(w1, w1x);
-  Word w2x;
-  Word::Read(&iss, &w2x);
-  CheckEqWord(w2, w2x);
+  Vocabulary read_vocabulary;
+  Vocabulary::Read<Vocabulary::Item>(&iss, &read_vocabulary);
+  std::vector<std::pair<std::string, size_t>> item_count_vec = {
+      std::make_pair("c", 3), std::make_pair("b", 2), std::make_pair("a", 1)};
+  CheckVocabulary(read_vocabulary, item_count_vec);
 }
 
 void TestVocabulary() {
+  TestVocabularyBuild();
   TestVocabularyIO();
 }
-*/
 
 }  // namespace
 }  // namespace embedding
 }  // namespace deeplearning
 
 int main(int argc, char** argv) {
-  //deeplearning::embedding::TestVocabulary();
+  deeplearning::embedding::TestVocabulary();
   LOG(INFO) << "PASS";
   return 0;
 }
