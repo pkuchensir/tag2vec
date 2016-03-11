@@ -43,6 +43,7 @@ class Tag2Vec {
   float init_alpha_ = 0.025;
   float min_alpha_ = 0.0001;
 
+  bool has_trained_ = false;
 };
 
 }  // namespace embedding
