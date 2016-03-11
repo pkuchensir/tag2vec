@@ -28,20 +28,10 @@ class Word final : public Vocabulary::Item {
       : Vocabulary::Item(index, count, text),
         probability_(probability) {}
 
-  ~Word() override;
-
   float probability() const { return probability_; }
   void set_probability(float probability) {
     probability_ = probability;
   }
-
-  std::vector<bool>* codes() { return codes_; }
-  const std::vector<bool>* codes() const { return codes_; }
-
-  std::vector<size_t>* points() { return points_; }
-  const std::vector<size_t>* points() const { return points_; }
-
-  void InitHsNode();
 
   void Write(std::ostream* out);
   static void Read(std::istream* in, Word* word);
@@ -51,9 +41,6 @@ class Word final : public Vocabulary::Item {
   size_t count_ = 1;
   std::string text_;
   float probability_ = 1.0;
-
-  std::vector<bool>* codes_ = nullptr;
-  std::vector<size_t>* points_ = nullptr;
 };
 
 }  // namespace embedding

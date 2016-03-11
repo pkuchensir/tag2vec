@@ -16,30 +16,6 @@ void CheckEqWord(const Word& expect, const Word& actual) {
   CHECK_EQ(expect.text(), actual.text()) << "text mismatched.";
   CHECK_EQ(expect.probability(), actual.probability())
       << "probability mismatched.";
-
-  if (expect.codes() && actual.codes()) {
-    CHECK_EQ(expect.codes()->size(), actual.codes()->size())
-        << "Size of codes mismatched.";
-    for (size_t i = 0; i < expect.codes()->size(); ++i) {
-      CHECK_EQ((*expect.codes())[i], (*actual.codes())[i]) << "codes[" << i
-                                                           << "] mismatched.";
-    }
-  } else {
-    CHECK(expect.codes() == nullptr && actual.codes() == nullptr)
-        << "Existence of cores mismatched.";
-  }
-
-  if (expect.points() && actual.points()) {
-    CHECK_EQ(expect.points()->size(), actual.points()->size())
-        << "Size of points mismatched.";
-    for (size_t i = 0; i < expect.points()->size(); ++i) {
-      CHECK_EQ((*expect.points())[i], (*actual.points())[i]) << "points[" << i
-                                                             << "] mismatched.";
-    }
-  } else {
-    CHECK(expect.points() == nullptr && actual.points() == nullptr)
-        << "Existence of cores mismatched.";
-  }
 }
 
 void TestWordIO() {
