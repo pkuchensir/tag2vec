@@ -21,18 +21,18 @@ class Word final : public Vocabulary::Item {
   Word(size_t index, size_t count, std::string&& text)
       : Word(index, count, std::move(text), 1) {}
   Word(size_t index, size_t count, const std::string& text,
-       float sample_probability)
+       float probability)
       : Vocabulary::Item(index, count, std::move(text)),
-        sample_probability_(sample_probability) {}
-  Word(size_t index, size_t count, std::string&& text, float sample_probability)
+        probability_(probability) {}
+  Word(size_t index, size_t count, std::string&& text, float probability)
       : Vocabulary::Item(index, count, text),
-        sample_probability_(sample_probability) {}
+        probability_(probability) {}
 
   ~Word();
 
-  float sample_probability() const { return sample_probability_; }
-  void set_sample_probability(float sample_probability) {
-    sample_probability_ = sample_probability;
+  float probability() const { return probability_; }
+  void set_probability(float probability) {
+    probability_ = probability;
   }
 
   std::vector<bool>* codes() { return codes_; }
@@ -48,9 +48,9 @@ class Word final : public Vocabulary::Item {
 
  private:
   size_t index_;
-  size_t count_;
+  size_t count_ = 1;
   std::string text_;
-  float sample_probability_;
+  float probability_ = 1.0;
 
   std::vector<bool>* codes_ = nullptr;
   std::vector<size_t>* points_ = nullptr;
