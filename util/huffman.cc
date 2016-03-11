@@ -66,9 +66,33 @@ void Huffman::Build(const std::vector<Vocabulary::Item*>& items) {
 }
 
 void Huffman::Write(std::ostream* out) const {
+  size_t codes_size = codes_.size();
+  WriteBasicItem(out, codes_size);
+  for (const auto& code_vec : codes_) {
+    util::WriteBasicItemVector(out, code_vec);
+  }
+
+  size_t points_size = points_.size();
+  WriteBasicItem(out, points_size);
+  for (const auto& point_vec : points_) {
+    util::WriteBasicItemVector(out, point_vec);
+  }
 }
 
 void Huffman::Read(std::istream* in, Huffman* huffman) {
+  size_t codes_size;
+  ReadBasicItem(in, &codes_size);
+  huffman->codes_.resize(codes_size);
+  for (size_t i = 0; i < codes_size; ++i) {
+    ReadBasicItemVector(in, &huffman->codes_[i]);
+  }
+
+  size_t points_size;
+  ReadBasicItem(in, &points_size);
+  huffman->points_.resize(points_size);
+  for (size_t i = 0; i < points_size; ++i) {
+    ReadBasicItemVector(in, &huffman->points_[i]);
+  }
 }
 
 std::string Huffman::ToString() const {
