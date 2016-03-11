@@ -2,6 +2,7 @@
 #define UTIL_HUFFMAN_H_
 
 #include <iostream>
+#include <string>
 #include <vector>
 
 #include "document/vocabulary.h"
@@ -19,6 +20,8 @@ class Huffman final {
 
    void Write(std::ostream* out) const;
    static void Read(std::istream* in, Huffman* huffman);
+
+   std::string ToString() const;
 
  private:
   void GenerateCodesAndPoints(const std::vector<size_t>& left_index_vec,
