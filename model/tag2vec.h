@@ -12,6 +12,10 @@ namespace embedding {
 
 class Tag2Vec {
  public:
+  using RMatrixXf =
+      Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
+
+ public:
   Tag2Vec() = default;
 
   Tag2Vec(size_t layer_size, size_t min_count, float sample, float init_alpha,
@@ -24,7 +28,8 @@ class Tag2Vec {
 
   void Train(DocumentIterator* iterator, size_t iter);
 
-  Eigen::RowVectorXf Infer(const std::vector<std::string>& words, size_t iter) const;
+  Eigen::RowVectorXf Infer(const std::vector<std::string>& words,
+                           size_t iter) const;
 
   void Write(std::ostream* out);
   static void Read(std::istream* in, Tag2Vec* tag2vec);
@@ -37,6 +42,7 @@ class Tag2Vec {
   float sample_ = 0;
   float init_alpha_ = 0.025;
   float min_alpha_ = 0.0001;
+
 };
 
 }  // namespace embedding
