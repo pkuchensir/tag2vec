@@ -6,7 +6,7 @@ LDFLAGS = -lm -fopenmp
 CXX = $(GXX)
 LD = $(GXX)
 
-SOURCE_DIR = document iterate util
+SOURCE_DIR = document model util
 SOURCE_FILES = \
 $(wildcard *.cc) $(foreach dir,$(SOURCE_DIR),$(wildcard $(dir)/*.cc))
 SOURCE_TESTS = \

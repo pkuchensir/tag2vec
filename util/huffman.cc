@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "document/vocabulary.h"
+#include "util/io.h"
 
 namespace deeplearning {
 namespace embedding {
