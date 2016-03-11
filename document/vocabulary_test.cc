@@ -21,7 +21,7 @@ void BuildVocabulary(const std::vector<std::string>& items, size_t min_count,
 
 void CheckVocabulary(
     const Vocabulary& vocabulary,
-    std::vector<std::pair<std::string, size_t>> item_count_vec) {
+    const std::vector<std::pair<std::string, size_t>>& item_count_vec) {
   size_t total_count = 0;
   for (const auto& item_count : item_count_vec) {
     total_count += item_count.second;

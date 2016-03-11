@@ -21,7 +21,7 @@ void Word::InitHsNode() {
 
 void Word::Write(std::ostream* out) {
   Vocabulary::Item::Write(out);
-  util::WriteBasicItem(out, sample_probability_);
+  util::WriteBasicItem(out, probability_);
 
   bool has_codes = codes_;
   util::WriteBasicItem(out, has_codes);
@@ -38,7 +38,7 @@ void Word::Write(std::ostream* out) {
 
 void Word::Read(std::istream* in, Word* word) {
   Vocabulary::Item::Read(in, word);
-  util::ReadBasicItem(in, &word->sample_probability_);
+  util::ReadBasicItem(in, &word->probability_);
 
   bool has_codes;
   util::ReadBasicItem(in, &has_codes);

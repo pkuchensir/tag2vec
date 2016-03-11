@@ -28,7 +28,7 @@ class Word final : public Vocabulary::Item {
       : Vocabulary::Item(index, count, text),
         probability_(probability) {}
 
-  ~Word();
+  ~Word() override;
 
   float probability() const { return probability_; }
   void set_probability(float probability) {

@@ -14,8 +14,8 @@ void CheckEqWord(const Word& expect, const Word& actual) {
   CHECK_EQ(expect.index(), actual.index()) << "index mismatched.";
   CHECK_EQ(expect.count(), actual.count()) << "count mismatched.";
   CHECK_EQ(expect.text(), actual.text()) << "text mismatched.";
-  CHECK_EQ(expect.sample_probability(), actual.sample_probability())
-      << "sample_probability mismatched.";
+  CHECK_EQ(expect.probability(), actual.probability())
+      << "probability mismatched.";
 
   if (expect.codes() && actual.codes()) {
     CHECK_EQ(expect.codes()->size(), actual.codes()->size())
