@@ -10,6 +10,12 @@
 namespace deeplearning {
 namespace embedding {
 
+Vocabulary::~Vocabulary() {
+  for (const Item* item : items_) {
+    delete item;
+  }
+}
+
 void Vocabulary::Build(size_t min_count) {
   CHECK(!has_built) << "This vocabulary has already been built.";
   has_built = true;
@@ -25,7 +31,7 @@ void Vocabulary::Build(size_t min_count) {
   }
 
   size_t num_to_remove = 0;
-  for (Item* item : to_remove_items) {
+  for (const Item* item : to_remove_items) {
     item_hash_.erase(item->text());
     num_to_remove += item->count();
     delete item;
@@ -50,9 +56,18 @@ void Vocabulary::Write(std::ostream* out) const {
   util::WriteBasicItem(out, total_items_);
   size_t items_size = items_.size();
   util::WriteBasicItem(out, items_size);
-  for (Item* item : items_) {
+  for (const Item* item : items_) {
     item->Write(out);
   }
+}
+
+void Vocabulary::Clear() {
+  for (const Item* item : items_) {
+    delete item;
+  }
+  items_.clear();
+  item_hash_.clear();
+  has_built = false;
 }
 
 bool Vocabulary::CheckEmpty() const {

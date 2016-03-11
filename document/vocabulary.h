@@ -10,11 +10,15 @@
 namespace deeplearning {
 namespace embedding {
 
-class Vocabulary {
+class Vocabulary final {
  public:
   class Item;
 
  public:
+  Vocabulary() = default;
+  Vocabulary(const Vocabulary& vocabulary) = delete;
+  ~Vocabulary();
+
   Item* item(size_t index) { return items_[index]; }
   const Item* item(size_t index) const { return items_[index]; }
   const Item* item(const std::string& item) const {
@@ -33,6 +37,8 @@ class Vocabulary {
 
   template <class ItemSubClass>
   static void Read(std::istream* in, Vocabulary* vocabulary);
+
+  void Clear();
 
  private:
   bool CheckEmpty() const;

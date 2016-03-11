@@ -11,7 +11,7 @@
 namespace deeplearning {
 namespace embedding {
 
-class Word : public Vocabulary::Item {
+class Word final : public Vocabulary::Item {
  public:
   Word() = default;
   Word(const std::string& text) : Word(0, 1, text) {}

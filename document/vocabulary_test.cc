@@ -11,14 +11,12 @@ namespace deeplearning {
 namespace embedding {
 namespace {
 
-Vocabulary BuildVocabulary(const std::vector<std::string>& items,
-                           size_t min_count) {
-  Vocabulary vocabulary;
+void BuildVocabulary(const std::vector<std::string>& items, size_t min_count,
+                     Vocabulary* vocabulary) {
   for (const std::string& item : items) {
-    vocabulary.AddItem<Vocabulary::Item>(item);
+    vocabulary->AddItem<Vocabulary::Item>(item);
   }
-  vocabulary.Build(min_count);
-  return vocabulary;
+  vocabulary->Build(min_count);
 }
 
 void CheckVocabulary(
@@ -41,19 +39,22 @@ void CheckVocabulary(
 }
 
 void TestVocabularyBuild() {
-  Vocabulary vocabulary = BuildVocabulary({"b", "c", "b", "a", "c", "c"}, 0);
+  Vocabulary vocabulary;
+  BuildVocabulary({"b", "c", "b", "a", "c", "c"}, 0, &vocabulary);
   std::vector<std::pair<std::string, size_t>> item_count_vec = {
       std::make_pair("c", 3), std::make_pair("b", 2), std::make_pair("a", 1)};
   CheckVocabulary(vocabulary, item_count_vec);
 
-  vocabulary = BuildVocabulary({"b", "c", "b", "a", "c", "c"}, 2);
+  vocabulary.Clear();
+  BuildVocabulary({"b", "c", "b", "a", "c", "c"}, 2, &vocabulary);
   item_count_vec = {std::make_pair("c", 3), std::make_pair("b", 2)};
   CheckVocabulary(vocabulary, item_count_vec);
 }
 
 void TestVocabularyIO() {
   std::ostringstream oss;
-  Vocabulary vocabulary = BuildVocabulary({"b", "c", "b", "a", "c", "c"}, 0);
+  Vocabulary vocabulary;
+  BuildVocabulary({"b", "c", "b", "a", "c", "c"}, 0, &vocabulary);
   vocabulary.Write(&oss);
 
   std::istringstream iss(oss.str());
