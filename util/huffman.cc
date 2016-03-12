@@ -20,7 +20,7 @@ void BuildHuffmanTree(const std::vector<Vocabulary::Item*>& items,
   left_index_vec->resize(items.size() - 1);
   right_index_vec->resize(items.size() - 1);
 
-  std::vector<size_t> count(items.size() * 2);
+  std::vector<size_t> count(items.size() * 2 - 1);
   for (size_t i = 0; i < items.size(); ++i) {
     count[i] = items[i]->count();
   }
@@ -51,7 +51,7 @@ void BuildHuffmanTree(const std::vector<Vocabulary::Item*>& items,
 }  // namespace
 
 void Huffman::Build(const std::vector<Vocabulary::Item*>& items) {
-  CHECK(items.size() >= 2) << "items should be more than 2.";
+  CHECK(items.size() >= 1) << "Size of items should be at least 1.";
   CHECK(codes_.empty() && points_.empty()) << "Huffman should be empty.";
 
   std::vector<size_t> left_index_vec, right_index_vec;
