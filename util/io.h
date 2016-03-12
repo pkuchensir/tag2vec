@@ -22,6 +22,11 @@ void WriteBasicItemVector(std::ostream* out, const std::vector<BasicType>& v);
 template <typename BasicType>
 void ReadBasicItemVector(std::istream* in, std::vector<BasicType>* v);
 
+template <class Matrix>
+void WriteMatrix(std::ostream* out, const Matrix& matrix);
+template <class Matrix>
+void ReadMatrix(std::istream* in, Matrix* matrix);
+
 }  // namespace util
 }  // namespace embedding
 }  // namespace deeplearning

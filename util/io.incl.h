@@ -39,6 +39,26 @@ void ReadBasicItemVector(std::istream* in, std::vector<BasicType>* v) {
   }
 }
 
+template <class Matrix>
+void WriteMatrix(std::ostream* out, const Matrix& matrix) {
+  typename Matrix::Index rows = matrix.rows();
+  typename Matrix::Index cols = matrix.cols();
+  WriteBasicItem(out, rows);
+  WriteBasicItem(out, cols);
+  out->write((char*)matrix.data(),
+             sizeof(typename Matrix::Scalar) * matrix.size());
+}
+
+template <class Matrix>
+void ReadMatrix(std::istream* in, Matrix* matrix) {
+  typename Matrix::Index rows, cols;
+  ReadBasicItem(in, &rows);
+  ReadBasicItem(in, &cols);
+  matrix->resize(rows, cols);
+  in->read((char*)matrix->data(),
+           sizeof(typename Matrix::Scalar) * matrix->size());
+}
+
 }  // namespace util
 }  // namespace embedding
 }  // namespace deeplearning
