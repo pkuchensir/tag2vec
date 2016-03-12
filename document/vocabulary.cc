@@ -74,6 +74,15 @@ void Vocabulary::Clear() {
   num_retained_ = 0;
 }
 
+std::string Vocabulary::ToString() const {
+  std::string ans = "num_original=" + std::to_string(num_original_) +
+                    ", num_retained=" + std::to_string(num_retained_) + "\n";
+  for (const Item* item : items_) {
+    ans += item->ToString() + "\n";
+  }
+  return ans;
+}
+
 bool Vocabulary::CheckEmpty() const {
   return num_original_ == 0 && num_retained_ == 0 && items_.empty() &&
          item_hash_.empty() && !has_built_;
@@ -89,6 +98,10 @@ void Vocabulary::Item::Read(std::istream* in, Vocabulary::Item* item) {
   util::ReadBasicItem(in, &item->index_);
   util::ReadBasicItem(in, &item->count_);
   util::ReadString(in, &item->text_);
+}
+
+std::string Vocabulary::Item::ToString() const {
+  return text_ + ":" + std::to_string(index_) + "," + std::to_string(count_);
 }
 
 }  // namespace embedding

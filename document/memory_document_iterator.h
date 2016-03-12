@@ -15,7 +15,7 @@ class MemoryDocumentIterator final : public DocumentIterator {
 
   Document* NextDocument() override;
 
-  void Reset();
+  void Reset() override;
 
  private:
   const std::vector<Document>* const documents_;  // NOT OWNED

@@ -44,6 +44,8 @@ class Vocabulary final {
 
   void Clear();
 
+  std::string ToString() const;
+
  private:
   bool CheckEmpty() const;
 
@@ -78,8 +80,10 @@ class Vocabulary::Item {
   void set_text(const std::string& text) { text_ = text; }
   void set_text(std::string&& text) { text_ = std::move(text); }
 
-  void Write(std::ostream* out) const;
+  virtual void Write(std::ostream* out) const;
   static void Read(std::istream* in, Item* item);
+
+  virtual std::string ToString() const;
 
  private:
   size_t index_;

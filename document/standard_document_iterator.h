@@ -14,7 +14,7 @@ class StandardDocumentIterator final : public DocumentIterator {
 
   Document* NextDocument() override;
 
-  void Reset();
+  void Reset() override;
 
  private:
   std::istream* in_;  // NOT OWNED

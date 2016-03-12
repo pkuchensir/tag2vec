@@ -36,6 +36,8 @@ class DocumentIterator {
   //
   // The caller will take the ownership of return value.
   virtual Document* NextDocument() = 0;
+
+  virtual void Reset() = 0;
 };
 
 }  // namespace embedding

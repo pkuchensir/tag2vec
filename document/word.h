@@ -33,8 +33,10 @@ class Word final : public Vocabulary::Item {
     probability_ = probability;
   }
 
-  void Write(std::ostream* out);
+  void Write(std::ostream* out) const override;
   static void Read(std::istream* in, Word* word);
+
+  std::string ToString() const override;
 
  private:
   size_t index_;
