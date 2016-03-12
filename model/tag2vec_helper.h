@@ -1,6 +1,7 @@
 #ifndef MODEL_TAG2VEC_HELPER_H_
 #define MODEL_TAG2VEC_HELPER_H_
 
+#include <eigen3/Eigen/Core>
 #include <random>
 #include <string>
 #include <vector>
@@ -36,7 +37,10 @@ void GetVocabularyItemVec(const Vocabulary& vocabulary,
                           const std::vector<std::string>& item_strs,
                           std::vector<const Vocabulary::Item*>* item_vec);
 
-//void TrainSgPair(Tag2Vec::RMatrixXf* tagi, Tag2Vec::RMatrixXf* wordo);
+void TrainSgPair(Tag2Vec::RMatrixXf::RowXpr input, Tag2Vec::RMatrixXf& output,
+                 const std::vector<bool>& codes,
+                 const std::vector<size_t>& points, float alpha,
+                 bool keep_output);
 
 }  // namespace embedding
 }  // namespace deeplearning

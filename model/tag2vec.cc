@@ -71,11 +71,20 @@ void Tag2Vec::Train(const std::vector<Document>& documents, size_t iter) {
     for (size_t i = 0; i < doc_index_vec.size(); ++i) {
       int doc_index = doc_index_vec[i];
       const Document& document = documents[doc_index];
+
       // Gets words and tags.
       std::vector<const Vocabulary::Item*> word_vec, tag_vec;
       GetVocabularyItemVec(word_vocab_, document.words(), &word_vec);
       GetVocabularyItemVec(tag_vocab_, document.tags(), &tag_vec);
       DownSample(&word_vec);
+
+      // Trains document.
+      for (const Vocabulary::Item* tag : tag_vec) {
+        for (const Vocabulary::Item* word : word_vec) {
+          TrainSgPair(tagi_.row(tag->index()), wordo_, word_huffman_.codes(word->index()),
+                      word_huffman_.points(word->index()), alpha, true);
+        }
+      }
 
       #pragma omp atomic update
       num_words += document.words().size();

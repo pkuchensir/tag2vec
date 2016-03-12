@@ -1,6 +1,7 @@
 #include "model/tag2vec_helper.h"
 
 #include <cmath>
+#include <eigen3/Eigen/Core>
 #include <omp.h>
 #include <random>
 #include <string>
@@ -72,6 +73,23 @@ void GetVocabularyItemVec(const Vocabulary& vocabulary,
       item_vec->push_back(item);
     }
   }
+}
+
+void TrainSgPair(Tag2Vec::RMatrixXf::RowXpr input, Tag2Vec::RMatrixXf& output,
+                 const std::vector<bool>& codes,
+                 const std::vector<size_t>& points, float alpha,
+                 bool keep_output) {
+  Eigen::VectorXf neu1e(input.size());
+  neu1e.setZero();
+  for (size_t i = 0; i < codes.size(); ++i) {
+    const float f = 1.0f / (1 + std::exp(-input.dot(output.row(points[i]))));
+    const float g = (codes[i] - f) * alpha;
+    if (!keep_output) {
+      output.row(points[i]) += g * input;
+    }
+    neu1e += g * output.row(points[i]);
+  }
+  input += neu1e;
 }
 
 }  // namespace embedding
