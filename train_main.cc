@@ -1,5 +1,4 @@
 #include <eigen3/Eigen/Core>
-#include <iostream>
 #include <fstream>
 #include <omp.h>
 #include <string>
