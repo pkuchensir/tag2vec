@@ -45,8 +45,8 @@ class Vocabulary final {
 
  private:
   size_t total_items_ = 0;
-  std::vector<Item*> items_;
-  std::unordered_map<std::string, Item*> item_hash_;
+  std::vector<Item*> items_;  // OWNED
+  std::unordered_map<std::string, Item*> item_hash_;  // VALUES NOT OWNED
 
   bool has_built_ = false;
 };

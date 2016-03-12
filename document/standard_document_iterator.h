@@ -2,7 +2,6 @@
 #define DOCUMENT_STANDARD_DOCUMENT_ITERATOR_H_
 
 #include <istream>
-#include <string>
 
 #include "document/document.h"
 
@@ -18,7 +17,7 @@ class StandardDocumentIterator final : public DocumentIterator {
   void Reset();
 
  private:
-  std::istream* in_;
+  std::istream* in_;  // NOT OWNED
 };
 
 }  // namespace embedding
