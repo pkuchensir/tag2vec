@@ -4,6 +4,7 @@
 #include <omp.h>
 #include <random>
 #include <string>
+#include <vector>
 
 #include "document/document.h"
 #include "document/tag.h"
@@ -60,6 +61,17 @@ void BuildTagVocabulary(DocumentIterator* iterator, Vocabulary* vocabulary) {
     }
   }
   vocabulary->Build();
+}
+
+void GetVocabularyItemVec(const Vocabulary& vocabulary,
+                          const std::vector<std::string>& item_strs,
+                          std::vector<const Vocabulary::Item*>* item_vec) {
+  for (const std::string& item_str : item_strs) {
+    const Vocabulary::Item* item = vocabulary.item(item_str);
+    if (item) {
+      item_vec->push_back(item);
+    }
+  }
 }
 
 }  // namespace embedding

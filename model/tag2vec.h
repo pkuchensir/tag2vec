@@ -3,7 +3,6 @@
 
 #include <eigen3/Eigen/Core>
 #include <iostream>
-#include <random>
 #include <string>
 
 #include "document/document.h"
@@ -43,6 +42,8 @@ class Tag2Vec final {
 
  private:
   void Initialize();
+
+  void DownSample(std::vector<const Vocabulary::Item*>* words);
 
  private:
   size_t layer_size_ = 300;

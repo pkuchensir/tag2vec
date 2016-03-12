@@ -11,7 +11,11 @@
 
 #include "document/document.h"
 #include "document/memory_document_iterator.h"
+#include "document/tag.h"
+#include "document/vocabulary.h"
+#include "document/word.h"
 #include "model/tag2vec_helper.h"
+#include "util/huffman.h"
 #include "util/io.h"
 #include "util/logging.h"
 
@@ -47,6 +51,14 @@ void Tag2Vec::Train(const std::vector<Document>& documents, size_t iter) {
   CHECK(tag_vocab_.items_size() >= 1) << "Size of tag_vocab should be at least 1.";
   CHECK(word_vocab_.items_size() >= 1) << "Size of word_vocab should be at least 1.";
 
+  // Initializes weights.
+  std::uniform_real_distribution<float> dist(-0.5, 0.5);
+  auto uniform = [&dist, this](size_t) { return dist(this->random_->engine()); };
+  size_t tag_dim = tag_vocab_.items_size();
+  tagi_ = RMatrixXf::NullaryExpr(tag_dim, layer_size_, uniform) / (float)tag_dim;
+  size_t word_dim = word_vocab_.items_size() - 1;
+  wordo_ = RMatrixXf::NullaryExpr(word_dim, layer_size_, uniform) / (float)word_dim;
+
   std::vector<size_t> doc_index_vec(documents.size());
   std::iota(doc_index_vec.begin(), doc_index_vec.end(), 0);
   float alpha = init_alpha_;
@@ -59,6 +71,11 @@ void Tag2Vec::Train(const std::vector<Document>& documents, size_t iter) {
     for (size_t i = 0; i < doc_index_vec.size(); ++i) {
       int doc_index = doc_index_vec[i];
       const Document& document = documents[doc_index];
+      // Gets words and tags.
+      std::vector<const Vocabulary::Item*> word_vec, tag_vec;
+      GetVocabularyItemVec(word_vocab_, document.words(), &word_vec);
+      GetVocabularyItemVec(tag_vocab_, document.tags(), &tag_vec);
+      DownSample(&word_vec);
 
       #pragma omp atomic update
       num_words += document.words().size();
@@ -96,6 +113,10 @@ void Tag2Vec::Write(std::ostream* out) {
   util::WriteBasicItem(out, sample_);
   util::WriteBasicItem(out, init_alpha_);
   util::WriteBasicItem(out, min_alpha_);
+
+  word_vocab_.Write(out);
+  tag_vocab_.Write(out);
+  word_huffman_.Write(out);
 }
 
 void Tag2Vec::Read(std::istream* in, Tag2Vec* tag2vec) {
@@ -106,6 +127,11 @@ void Tag2Vec::Read(std::istream* in, Tag2Vec* tag2vec) {
   util::ReadBasicItem(in, &tag2vec->init_alpha_);
   util::ReadBasicItem(in, &tag2vec->min_alpha_);
   tag2vec->Initialize();
+
+  Vocabulary::Read<Word>(in, &tag2vec->word_vocab_);
+  Vocabulary::Read<Tag>(in, &tag2vec->tag_vocab_);
+  util::Huffman::Read(in, &tag2vec->word_huffman_);
+
   tag2vec->has_trained_ = true;
 }
 
@@ -122,6 +148,17 @@ std::string Tag2Vec::ConfigString() const {
 void Tag2Vec::Initialize() {
   CHECK(min_alpha_ < init_alpha_) << "init_alpha should not be less than min_alpha.";
   random_ = new Random;
+}
+
+void Tag2Vec::DownSample(std::vector<const Vocabulary::Item*>* words) {
+  size_t len = 0;
+  for (size_t i = 0; i < words->size(); ++i) {
+    float probability = ((Word*)(*words)[i])->probability();
+    if (probability == 1 || probability >= random_->Sample()) {
+      words[len++] = words[i];
+    }
+  }
+  words->resize(len);
 }
 
 }  // namespace embedding

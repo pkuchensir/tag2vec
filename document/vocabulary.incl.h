@@ -32,7 +32,7 @@ void Vocabulary::Read(std::istream* in, Vocabulary* vocabulary) {
   vocabulary->items_.resize(items_size);
   for (size_t i = 0; i < items_size; ++i) {
     vocabulary->items_[i] = new ItemSubClass();
-    ItemSubClass::Read(in, vocabulary->items_[i]);
+    ItemSubClass::Read(in, (ItemSubClass*)vocabulary->items_[i]);
     vocabulary->item_hash_[vocabulary->items_[i]->text()] =
         vocabulary->items_[i];
   }

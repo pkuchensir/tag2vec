@@ -2,6 +2,8 @@
 #define MODEL_TAG2VEC_HELPER_H_
 
 #include <random>
+#include <string>
+#include <vector>
 
 #include "document/document.h"
 #include "document/vocabulary.h"
@@ -29,6 +31,10 @@ void BuildWordVocabulary(DocumentIterator* iterator, size_t min_count,
                          float sample, Vocabulary* vocabulary);
 
 void BuildTagVocabulary(DocumentIterator* iterator, Vocabulary* vocabulary);
+
+void GetVocabularyItemVec(const Vocabulary& vocabulary,
+                          const std::vector<std::string>& item_strs,
+                          std::vector<const Vocabulary::Item*>* item_vec);
 
 //void TrainSgPair(Tag2Vec::RMatrixXf* tagi, Tag2Vec::RMatrixXf* wordo);
 
