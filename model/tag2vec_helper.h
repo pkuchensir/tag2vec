@@ -1,7 +1,6 @@
 #ifndef MODEL_TAG2VEC_HELPER_H_
 #define MODEL_TAG2VEC_HELPER_H_
 
-#include <eigen3/Eigen/Core>
 #include <random>
 
 #include "model/tag2vec.h"

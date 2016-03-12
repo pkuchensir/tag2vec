@@ -3,29 +3,33 @@
 
 #include <eigen3/Eigen/Core>
 #include <iostream>
+#include <random>
 #include <string>
 
 #include "document/document.h"
+#include "document/tag.h"
+#include "document/vocabulary.h"
+#include "document/word.h"
 
 namespace deeplearning {
 namespace embedding {
 
-class Tag2Vec {
+class Tag2Vec final {
+ private:
+  class Random;
+
  public:
   using RMatrixXf =
       Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
 
  public:
-  Tag2Vec() = default;
-
+  Tag2Vec();
   Tag2Vec(size_t layer_size, size_t min_count, float sample, float init_alpha,
-          float min_alpha)
-      : layer_size_(layer_size),
-        min_count_(min_count),
-        sample_(sample),
-        init_alpha_(init_alpha),
-        min_alpha_(min_alpha) {}
+          float min_alpha);
+  Tag2Vec(const Tag2Vec& tag2vec) = delete;
+  ~Tag2Vec();
 
+  void Train(std::vector<const Document*>* documents, size_t iter);
   void Train(DocumentIterator* iterator, size_t iter);
 
   Eigen::RowVectorXf Infer(const std::vector<std::string>& words,
@@ -37,6 +41,9 @@ class Tag2Vec {
   std::string ConfigString() const;
 
  private:
+  void Initialize();
+
+ private:
   size_t layer_size_ = 300;
   size_t min_count_ = 0;
   float sample_ = 0;
@@ -44,6 +51,11 @@ class Tag2Vec {
   float min_alpha_ = 0.0001;
 
   bool has_trained_ = false;
+
+  Random* random_ = nullptr;
+
+  Vocabulary word_vocab_;
+  RMatrixXf tagi_, wordo_;
 };
 
 }  // namespace embedding
