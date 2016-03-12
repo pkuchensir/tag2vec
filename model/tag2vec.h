@@ -10,6 +10,7 @@
 #include "document/tag.h"
 #include "document/vocabulary.h"
 #include "document/word.h"
+#include "util/huffman.h"
 
 namespace deeplearning {
 namespace embedding {
@@ -29,7 +30,7 @@ class Tag2Vec final {
   Tag2Vec(const Tag2Vec& tag2vec) = delete;
   ~Tag2Vec();
 
-  void Train(std::vector<const Document*>* documents, size_t iter);
+  void Train(const std::vector<Document>& documents, size_t iter);
   void Train(DocumentIterator* iterator, size_t iter);
 
   Eigen::RowVectorXf Infer(const std::vector<std::string>& words,
@@ -52,9 +53,10 @@ class Tag2Vec final {
 
   bool has_trained_ = false;
 
-  Random* random_ = nullptr;
+  Random* random_ = nullptr;  // OWNED
 
-  Vocabulary word_vocab_;
+  Vocabulary word_vocab_, tag_vocab_;
+  util::Huffman word_huffman_;
   RMatrixXf tagi_, wordo_;
 };
 

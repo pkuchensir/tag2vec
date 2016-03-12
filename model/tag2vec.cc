@@ -3,12 +3,14 @@
 #include <algorithm>
 #include <eigen3/Eigen/Core>
 #include <iostream>
+#include <numeric>
 #include <omp.h>
 #include <random>
 #include <string>
 #include <vector>
 
 #include "document/document.h"
+#include "document/memory_document_iterator.h"
 #include "model/tag2vec_helper.h"
 #include "util/io.h"
 #include "util/logging.h"
@@ -31,28 +33,53 @@ Tag2Vec::Tag2Vec(size_t layer_size, size_t min_count, float sample,
 }
 
 Tag2Vec::~Tag2Vec() {
-  delete random_;
+  if (random_) delete random_;
 }
 
-void Tag2Vec::Train(std::vector<const Document*>* documents, size_t iter) {
+void Tag2Vec::Train(const std::vector<Document>& documents, size_t iter) {
   CHECK(!has_trained_) << "Tag2Vec has already been trained.";
+  MemoryDocumentIterator iterator(documents);
+  BuildTagVocabulary(&iterator, &tag_vocab_);
+  iterator.Reset();
+  BuildWordVocabulary(&iterator, min_count_, sample_, &word_vocab_);
+  word_huffman_.Build(word_vocab_.items());
+
+  CHECK(tag_vocab_.items_size() >= 1) << "Size of tag_vocab should be at least 1.";
+  CHECK(word_vocab_.items_size() >= 1) << "Size of word_vocab should be at least 1.";
+
+  std::vector<size_t> doc_index_vec(documents.size());
+  std::iota(doc_index_vec.begin(), doc_index_vec.end(), 0);
+  float alpha = init_alpha_;
+  size_t num_words = 0;
+
   for (size_t t = 0; t < iter; ++t) {
-    std::shuffle(documents->begin(), documents->end(), random_->engine());
+    std::shuffle(doc_index_vec.begin(), doc_index_vec.end(), random_->engine());
+
+    #pragma omp parallel for
+    for (size_t i = 0; i < doc_index_vec.size(); ++i) {
+      int doc_index = doc_index_vec[i];
+      const Document& document = documents[doc_index];
+
+      #pragma omp atomic update
+      num_words += document.words().size();
+      const float next_alpha =
+          init_alpha_ -
+          (init_alpha_ - min_alpha_) * num_words / word_vocab_.num_original();
+      alpha = std::max(alpha, next_alpha);
+    }
   }
   has_trained_ = true;
 }
 
 void Tag2Vec::Train(DocumentIterator* iterator, size_t iter) {
   CHECK(!has_trained_) << "Tag2Vec has already been trained.";
-  std::vector<const Document*> documents;
-  Document* document;
+  std::vector<Document> documents;
+  const Document* document;
   while ((document = iterator->NextDocument())) {
-    documents.push_back(document);
-  }
-  Train(&documents, iter);
-  for (const Document* document : documents) {
+    documents.push_back(*document);
     delete document;
   }
+  Train(documents, iter);
   has_trained_ = true;
 }
 
@@ -93,6 +120,7 @@ std::string Tag2Vec::ConfigString() const {
 }
 
 void Tag2Vec::Initialize() {
+  CHECK(min_alpha_ < init_alpha_) << "init_alpha should not be less than min_alpha.";
   random_ = new Random;
 }
 

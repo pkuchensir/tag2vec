@@ -3,6 +3,8 @@
 
 #include <random>
 
+#include "document/document.h"
+#include "document/vocabulary.h"
 #include "model/tag2vec.h"
 
 namespace deeplearning {
@@ -20,8 +22,13 @@ class Tag2Vec::Random final {
 
  private:
   std::mt19937_64 engine_;
-  std::uniform_real_distribution<float>* sample_ = nullptr;
+  std::uniform_real_distribution<float>* sample_ = nullptr;  // OWNED
 };
+
+void BuildWordVocabulary(DocumentIterator* iterator, size_t min_count,
+                         float sample, Vocabulary* vocabulary);
+
+void BuildTagVocabulary(DocumentIterator* iterator, Vocabulary* vocabulary);
 
 //void TrainSgPair(Tag2Vec::RMatrixXf* tagi, Tag2Vec::RMatrixXf* wordo);
 
