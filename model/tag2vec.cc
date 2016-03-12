@@ -85,7 +85,8 @@ void Tag2Vec::Train(const std::vector<Document>& documents, size_t iter) {
       // Trains document.
       for (const Vocabulary::Item* tag : tag_vec) {
         for (const Vocabulary::Item* word : word_vec) {
-          TrainSgPair(tagi_.row(tag->index()), wordo_, word_huffman_.codes(word->index()),
+          TrainSgPair(tagi_.row(tag->index()), wordo_,
+                      word_huffman_.codes(word->index()),
                       word_huffman_.points(word->index()), alpha, true);
         }
       }
@@ -97,7 +98,9 @@ void Tag2Vec::Train(const std::vector<Document>& documents, size_t iter) {
           (init_alpha_ - min_alpha_) * num_words / word_vocab_.num_original() / iter;
       alpha = std::max(alpha, next_alpha);
 
-      if ((i + 1) % 1000000 == 0) {
+      static const size_t DISPLAY_NUM = 100000;
+      if (num_words / DISPLAY_NUM >
+          (num_words - document.words().size()) / DISPLAY_NUM) {
         LOG(INFO) << "Iter" << t << ": Processed " << num_words << "/"
                   << word_vocab_.num_original() * iter << " words.";
       }
@@ -125,7 +128,7 @@ Eigen::RowVectorXf Tag2Vec::Infer(const std::vector<std::string>& words,
   return ans;
 }
 
-void Tag2Vec::Write(std::ostream* out) {
+void Tag2Vec::Write(std::ostream* out) const {
   CHECK(has_trained_) << "Tag2Vec has not been trained.";
   util::WriteBasicItem(out, layer_size_);
   util::WriteBasicItem(out, min_count_);
@@ -180,7 +183,7 @@ void Tag2Vec::DownSample(std::vector<const Vocabulary::Item*>* words) {
   for (size_t i = 0; i < words->size(); ++i) {
     float probability = ((Word*)(*words)[i])->probability();
     if (probability == 1 || probability >= random_->Sample()) {
-      words[len++] = words[i];
+      (*words)[len++] = (*words)[i];
     }
   }
   words->resize(len);

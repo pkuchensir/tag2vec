@@ -32,10 +32,13 @@ class Tag2Vec final {
   void Train(const std::vector<Document>& documents, size_t iter);
   void Train(DocumentIterator* iterator, size_t iter);
 
+  // Eigen::VectorXf TagVec(const std::string& tag) const;
+  // void MostSimilar(const Eigen::VectorXf& v) const;
+
   Eigen::RowVectorXf Infer(const std::vector<std::string>& words,
                            size_t iter) const;
 
-  void Write(std::ostream* out);
+  void Write(std::ostream* out) const;
   static void Read(std::istream* in, Tag2Vec* tag2vec);
 
   std::string ConfigString() const;
