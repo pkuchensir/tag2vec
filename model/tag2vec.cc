@@ -126,6 +126,9 @@ void Tag2Vec::Write(std::ostream* out) {
   word_vocab_.Write(out);
   tag_vocab_.Write(out);
   word_huffman_.Write(out);
+
+  util::WriteMatrix(out, tagi_);
+  util::WriteMatrix(out, wordo_);
 }
 
 void Tag2Vec::Read(std::istream* in, Tag2Vec* tag2vec) {
@@ -140,6 +143,9 @@ void Tag2Vec::Read(std::istream* in, Tag2Vec* tag2vec) {
   Vocabulary::Read<Word>(in, &tag2vec->word_vocab_);
   Vocabulary::Read<Tag>(in, &tag2vec->tag_vocab_);
   util::Huffman::Read(in, &tag2vec->word_huffman_);
+
+  util::ReadMatrix(in, &tag2vec->tagi_);
+  util::ReadMatrix(in, &tag2vec->wordo_);
 
   tag2vec->has_trained_ = true;
 }

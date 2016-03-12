@@ -58,6 +58,7 @@ class Tag2Vec final {
 
   Vocabulary word_vocab_, tag_vocab_;
   util::Huffman word_huffman_;
+
   RMatrixXf tagi_, wordo_;
 };
 
