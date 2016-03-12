@@ -5,7 +5,7 @@ This project aims to build tag representation models based on word2vec.
 ## Platform
 * Ubuntu 14.04
 * g++ >= 4.8
-* eigen3
+* libeigen3-dev
 
 ---
 ## Build & Clean
