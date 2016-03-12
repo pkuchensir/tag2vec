@@ -2,7 +2,9 @@
 #include <omp.h>
 #include <unistd.h>
 
-static int i = 0;
+namespace {
+
+int i = 0;
 
 void F(int p) {
   int k;
@@ -25,6 +27,8 @@ void G(int p) {
     std::cerr << "g(" << p << "): " << i << std::endl;
   }
 }
+
+}  // namespace
 
 int main(int argc, char** argv) {
   omp_set_num_threads(4);
