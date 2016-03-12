@@ -19,7 +19,6 @@ class StandardDocumentIterator final : public DocumentIterator {
 
  private:
   std::istream* in_;
-  bool has_next = false;
 };
 
 }  // namespace embedding
