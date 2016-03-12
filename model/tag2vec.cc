@@ -51,6 +51,8 @@ void Tag2Vec::Train(const std::vector<Document>& documents, size_t iter) {
   CHECK(tag_vocab_.items_size() >= 1) << "Size of tag_vocab should be at least 1.";
   CHECK(word_vocab_.items_size() >= 1) << "Size of word_vocab should be at least 1.";
 
+  LOG(INFO) << "Vocabularies for words and tags have been built.";
+
   // Initializes weights.
   std::uniform_real_distribution<float> dist(-0.5, 0.5);
   auto uniform = [&dist, this](size_t) { return dist(this->random_->engine()); };
@@ -58,6 +60,8 @@ void Tag2Vec::Train(const std::vector<Document>& documents, size_t iter) {
   tagi_ = RMatrixXf::NullaryExpr(tag_dim, layer_size_, uniform) / (float)tag_dim;
   size_t word_dim = word_vocab_.items_size() - 1;
   wordo_ = RMatrixXf::NullaryExpr(word_dim, layer_size_, uniform) / (float)word_dim;
+
+  LOG(INFO) << "Weights have been initialized.";
 
   std::vector<size_t> doc_index_vec(documents.size());
   std::iota(doc_index_vec.begin(), doc_index_vec.end(), 0);
@@ -90,9 +94,15 @@ void Tag2Vec::Train(const std::vector<Document>& documents, size_t iter) {
       num_words += document.words().size();
       const float next_alpha =
           init_alpha_ -
-          (init_alpha_ - min_alpha_) * num_words / word_vocab_.num_original();
+          (init_alpha_ - min_alpha_) * num_words / word_vocab_.num_original() / iter;
       alpha = std::max(alpha, next_alpha);
+
+      if (i % 1000000 == 999999) {
+        LOG(INFO) << "Iter" << t << ": Processed " << num_words << "/"
+                  << word_vocab_.num_original() * iter << " words.";
+      }
     }
+    LOG(INFO) << "Iteration " << t << " has finished.";
   }
   has_trained_ = true;
 }
