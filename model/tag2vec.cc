@@ -37,7 +37,7 @@ Tag2Vec::Tag2Vec(size_t layer_size, size_t min_count, float sample,
 }
 
 Tag2Vec::~Tag2Vec() {
-  if (random_) delete random_;
+  delete random_;
 }
 
 void Tag2Vec::Train(const std::vector<Document>& documents, size_t iter) {
@@ -97,7 +97,7 @@ void Tag2Vec::Train(const std::vector<Document>& documents, size_t iter) {
           (init_alpha_ - min_alpha_) * num_words / word_vocab_.num_original() / iter;
       alpha = std::max(alpha, next_alpha);
 
-      if (i % 1000000 == 999999) {
+      if ((i + 1) % 1000000 == 0) {
         LOG(INFO) << "Iter" << t << ": Processed " << num_words << "/"
                   << word_vocab_.num_original() * iter << " words.";
       }

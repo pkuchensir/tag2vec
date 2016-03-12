@@ -60,6 +60,7 @@ void BuildTagVocabulary(DocumentIterator* iterator, Vocabulary* vocabulary) {
     for (const std::string& tag : document->tags()) {
       vocabulary->AddItem<Tag>(tag);
     }
+    delete document;
   }
   vocabulary->Build();
 }
