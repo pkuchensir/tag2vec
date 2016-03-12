@@ -24,7 +24,9 @@ void Vocabulary::AddItem(const std::string& item) {
 template <class ItemSubClass>
 void Vocabulary::Read(std::istream* in, Vocabulary* vocabulary) {
   CHECK(vocabulary->CheckEmpty()) << "Vocabulary should be empty.";
-  util::ReadBasicItem(in, &vocabulary->total_items_);
+  util::ReadBasicItem(in, &vocabulary->num_original_);
+  util::ReadBasicItem(in, &vocabulary->num_retained_);
+
   size_t items_size;
   util::ReadBasicItem(in, &items_size);
   vocabulary->items_.resize(items_size);

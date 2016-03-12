@@ -19,19 +19,23 @@ class Vocabulary final {
   Vocabulary(const Vocabulary& vocabulary) = delete;
   ~Vocabulary();
 
+  const std::vector<Item*> items() const { return items_; }
   Item* item(size_t index) { return items_[index]; }
   const Item* item(size_t index) const { return items_[index]; }
   const Item* item(const std::string& item) const {
     auto it = item_hash_.find(item);
     return it != item_hash_.end() ? it->second : nullptr;
   }
-  const size_t total_items() const { return total_items_; }
-  const size_t items_size() const { return items_.size(); }
+
+  size_t num_original() const { return num_original_; }
+  size_t num_retained() const { return num_retained_; }
+  size_t items_size() const { return items_.size(); }
 
   template <class ItemSubClass>
   void AddItem(const std::string& item);
 
   void Build(size_t min_count);
+  void Build() { Build(0); }
 
   void Write(std::ostream* out) const;
 
@@ -44,7 +48,8 @@ class Vocabulary final {
   bool CheckEmpty() const;
 
  private:
-  size_t total_items_ = 0;
+  size_t num_original_ = 0;
+  size_t num_retained_ = 0;
   std::vector<Item*> items_;  // OWNED
   std::unordered_map<std::string, Item*> item_hash_;  // VALUES NOT OWNED
 

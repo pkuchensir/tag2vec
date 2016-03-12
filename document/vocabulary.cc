@@ -20,14 +20,13 @@ void Vocabulary::Build(size_t min_count) {
   CHECK(!has_built_) << "Vocabulary has already been built.";
   has_built_ = true;
 
-  size_t num_original_items = 0;
   std::vector<Item*> to_remove_items;
   for (const auto& key_item : item_hash_) {
     Item* item = key_item.second;
     if (item->count() < min_count) {
       to_remove_items.push_back(item);
     }
-    num_original_items += item->count();
+    num_original_ += item->count();
   }
 
   size_t num_to_remove = 0;
@@ -37,7 +36,7 @@ void Vocabulary::Build(size_t min_count) {
     delete item;
   }
 
-  total_items_ = num_original_items - num_to_remove;
+  num_retained_ = num_original_ - num_to_remove;
 
   for (const auto& key_item : item_hash_) {
     Item* item = key_item.second;
@@ -54,7 +53,9 @@ void Vocabulary::Build(size_t min_count) {
 
 void Vocabulary::Write(std::ostream* out) const {
   CHECK(has_built_) << "Vocabulary has not been built.";
-  util::WriteBasicItem(out, total_items_);
+  util::WriteBasicItem(out, num_original_);
+  util::WriteBasicItem(out, num_retained_);
+
   size_t items_size = items_.size();
   util::WriteBasicItem(out, items_size);
   for (const Item* item : items_) {
@@ -69,12 +70,13 @@ void Vocabulary::Clear() {
   items_.clear();
   item_hash_.clear();
   has_built_ = false;
-  total_items_ = 0;
+  num_original_ = 0;
+  num_retained_ = 0;
 }
 
 bool Vocabulary::CheckEmpty() const {
-  return total_items_ == 0 && items_.empty() && item_hash_.empty() &&
-         !has_built_;
+  return num_original_ == 0 && num_retained_ == 0 && items_.empty() &&
+         item_hash_.empty() && !has_built_;
 }
 
 void Vocabulary::Item::Write(std::ostream* out) const {

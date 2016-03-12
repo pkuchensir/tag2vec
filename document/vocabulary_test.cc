@@ -26,7 +26,7 @@ void CheckVocabulary(
   for (const auto& item_count : item_count_vec) {
     total_count += item_count.second;
   }
-  CHECK_EQ(total_count, vocabulary.total_items()) << "total_items mismatched.";
+  CHECK_EQ(total_count, vocabulary.num_retained()) << "num_retained mismatched.";
   CHECK_EQ(item_count_vec.size(), vocabulary.items_size())
       << "items_size mismatched.";
   for (size_t i = 0; i < item_count_vec.size(); ++i) {
@@ -43,11 +43,13 @@ void TestVocabularyBuild() {
   BuildVocabulary({"b", "c", "b", "a", "c", "c"}, 0, &vocabulary);
   std::vector<std::pair<std::string, size_t>> item_count_vec = {
       std::make_pair("c", 3), std::make_pair("b", 2), std::make_pair("a", 1)};
+  CHECK_EQ(6, vocabulary.num_original()) << "num_original mismatched.";
   CheckVocabulary(vocabulary, item_count_vec);
 
   vocabulary.Clear();
   BuildVocabulary({"b", "c", "b", "a", "c", "c"}, 2, &vocabulary);
   item_count_vec = {std::make_pair("c", 3), std::make_pair("b", 2)};
+  CHECK_EQ(6, vocabulary.num_original()) << "num_original mismatched.";
   CheckVocabulary(vocabulary, item_count_vec);
 }
 
@@ -62,6 +64,7 @@ void TestVocabularyIO() {
   Vocabulary::Read<Vocabulary::Item>(&iss, &read_vocabulary);
   std::vector<std::pair<std::string, size_t>> item_count_vec = {
       std::make_pair("c", 3), std::make_pair("b", 2), std::make_pair("a", 1)};
+  CHECK_EQ(6, vocabulary.num_original()) << "num_original mismatched.";
   CheckVocabulary(read_vocabulary, item_count_vec);
 }
 
