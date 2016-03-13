@@ -11,6 +11,7 @@
 
 #include "document/document.h"
 #include "document/memory_document_iterator.h"
+#include "document/score_item.h"
 #include "document/tag.h"
 #include "document/vocabulary.h"
 #include "document/word.h"
@@ -122,6 +123,30 @@ void Tag2Vec::Train(DocumentIterator* iterator, size_t iter) {
   has_trained_ = true;
 }
 
+bool Tag2Vec::ContainsTag(const std::string& tag) const {
+  return tag_vocab_.item(tag);
+}
+
+Eigen::VectorXf Tag2Vec::TagVec(const std::string& tag) const {
+  return tagi_.row(tag_vocab_.item(tag)->index());
+}
+
+std::vector<ScoreItem> Tag2Vec::MostSimilar(const Eigen::VectorXf& v,
+                                            size_t limit) const {
+  std::vector<ScoreItem> ans;
+  for (const Vocabulary::Item* item : tag_vocab_.items()) {
+    RMatrixXf::ConstRowXpr tagv = tagi_.row(item->index());
+    float score = v.dot(tagv) / v.norm() / tagv.norm();
+    ans.emplace_back(item->text(), score);
+    std::push_heap(ans.begin(), ans.end());
+    if (ans.size() > limit) {
+      std::pop_heap(ans.begin(), ans.end());
+      ans.pop_back();
+    }
+  }
+  return ans;
+}
+
 Eigen::RowVectorXf Tag2Vec::Infer(const std::vector<std::string>& words,
                                   size_t iter) const {
   Eigen::RowVectorXf ans;
@@ -175,7 +200,7 @@ std::string Tag2Vec::ConfigString() const {
 
 void Tag2Vec::Initialize() {
   CHECK(min_alpha_ < init_alpha_) << "init_alpha should not be less than min_alpha.";
-  random_ = new Random;
+  if (random_ == nullptr) random_ = new Random;
 }
 
 void Tag2Vec::DownSample(std::vector<const Vocabulary::Item*>* words) {

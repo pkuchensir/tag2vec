@@ -4,8 +4,10 @@
 #include <eigen3/Eigen/Core>
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include "document/document.h"
+#include "document/score_item.h"
 #include "document/tag.h"
 #include "document/vocabulary.h"
 #include "document/word.h"
@@ -32,8 +34,10 @@ class Tag2Vec final {
   void Train(const std::vector<Document>& documents, size_t iter);
   void Train(DocumentIterator* iterator, size_t iter);
 
-  // Eigen::VectorXf TagVec(const std::string& tag) const;
-  // void MostSimilar(const Eigen::VectorXf& v) const;
+  bool ContainsTag(const std::string& tag) const;
+  Eigen::VectorXf TagVec(const std::string& tag) const;
+  std::vector<ScoreItem> MostSimilar(const Eigen::VectorXf& v,
+                                     size_t limit) const;
 
   Eigen::RowVectorXf Infer(const std::vector<std::string>& words,
                            size_t iter) const;
