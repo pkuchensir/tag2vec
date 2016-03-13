@@ -14,7 +14,7 @@ void Train(const std::string& input_path, const std::string& model_path) {
   Tag2Vec tag2vec;
   std::ifstream fin(input_path);
   StandardDocumentIterator iterator(&fin);
-  tag2vec.Train(&iterator, 2);
+  tag2vec.Train(&iterator, 50);
 
   std::ofstream fout(model_path);
   tag2vec.Write(&fout);
@@ -26,6 +26,7 @@ void Train(const std::string& input_path, const std::string& model_path) {
 
 int main(int argc, char** argv) {
   Eigen::initParallel();
+  omp_set_num_threads(4);
   deeplearning::embedding::Train("/home/dhuang/twitter.big.train.txt",
                                  "/home/dhuang/tag2vec.model");
   return 0;
