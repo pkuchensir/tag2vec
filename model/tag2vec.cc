@@ -88,7 +88,7 @@ void Tag2Vec::Train(const std::vector<Document>& documents, size_t iter) {
         for (const Vocabulary::Item* word : word_vec) {
           TrainSgPair(tagi_.row(tag->index()), wordo_,
                       word_huffman_.codes(word->index()),
-                      word_huffman_.points(word->index()), alpha, false);
+                      word_huffman_.points(word->index()), alpha, true);
         }
       }
 
