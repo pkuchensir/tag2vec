@@ -28,7 +28,7 @@
 
 #define LOG(severity) LOG_##severity.stream() << DEBUG_MESSAGE
 #define LOG_INFO search::util::LogInfoMessage()
-#define LOG_FATAL search::util::CheckConditionMessage(true)
+#define LOG_FATAL search::util::CheckConditionMessage(false)
 
 namespace search {
 namespace util {
