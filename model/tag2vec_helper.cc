@@ -86,10 +86,11 @@ void TrainSgPair(Tag2Vec::RMatrixXf::RowXpr input, Tag2Vec::RMatrixXf& output,
   for (size_t i = 0; i < codes.size(); ++i) {
     const float f = 1.0f / (1 + std::exp(-input.dot(output.row(points[i]))));
     const float g = (codes[i] - f) * alpha;
+    // Applies old output value to update.
+    neu1e += g * output.row(points[i]);
     if (update_output) {
       output.row(points[i]) += g * input;
     }
-    neu1e += g * output.row(points[i]);
   }
   input += neu1e;
 }
