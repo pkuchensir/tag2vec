@@ -10,32 +10,15 @@ namespace deeplearning {
 namespace embedding {
 namespace {
 
-void PrintScoreItemVec(const std::vector<ScoreItem>& score_item_vec) {
-  for (const ScoreItem& score_item : score_item_vec) {
-    LOG(INFO) << score_item.ToString();
-  }
-}
-
 void Train(const std::string& input_path, const std::string& model_path) {
-  Tag2Vec tag2vec;
+  Tag2Vec tag2vec(300 /* layer_size */, 0 /* min_count */, 0 /* sample */,
+                  0.025 /* init_alpha */, 0.0001 /* min_alpha */);
   std::ifstream fin(input_path);
   StandardDocumentIterator iterator(&fin);
-  tag2vec.Train(&iterator, 10);
+  tag2vec.Train(&iterator, 50 /* iter */);
 
-  std::string tag = "music";
-  LOG(INFO) << tag << ":";
-  std::vector<ScoreItem> ans = tag2vec.MostSimilar(tag2vec.TagVec(tag), 20);
-  PrintScoreItemVec(ans);
-
-  tag = "food";
-  LOG(INFO) << tag << ":";
-  ans = tag2vec.MostSimilar(tag2vec.TagVec(tag), 20);
-  PrintScoreItemVec(ans);
-
-  /*
   std::ofstream fout(model_path);
   tag2vec.Write(&fout);
-  */
 }
 
 }  // namespace

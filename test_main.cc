@@ -24,12 +24,27 @@ void Test(const std::string& model_path) {
 
   std::string tag = "music";
   LOG(INFO) << tag << ":";
-  std::vector<ScoreItem> ans = tag2vec.MostSimilar(tag2vec.TagVec(tag), 20);
+  std::vector<ScoreItem> ans = tag2vec.MostSimilar(tag2vec.TagVec(tag), 10);
   PrintScoreItemVec(ans);
 
   tag = "food";
   LOG(INFO) << tag << ":";
-  ans = tag2vec.MostSimilar(tag2vec.TagVec(tag), 20);
+  ans = tag2vec.MostSimilar(tag2vec.TagVec(tag), 10);
+  PrintScoreItemVec(ans);
+
+  tag = "writing";
+  LOG(INFO) << tag << ":";
+  ans = tag2vec.MostSimilar(tag2vec.TagVec(tag), 10);
+  PrintScoreItemVec(ans);
+
+  tag = "cooking";
+  LOG(INFO) << tag << ":";
+  ans = tag2vec.MostSimilar(tag2vec.TagVec(tag), 10);
+  PrintScoreItemVec(ans);
+
+  tag = "organic";
+  LOG(INFO) << tag << ":";
+  ans = tag2vec.MostSimilar(tag2vec.TagVec(tag), 10);
   PrintScoreItemVec(ans);
 }
 
