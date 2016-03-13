@@ -22,9 +22,12 @@ void Test(const std::string& model_path) {
   std::ifstream fin(model_path);
   Tag2Vec::Read(&fin, &tag2vec);
 
-  std::string tag = "music";
+  std::string tag;
+  std::vector<ScoreItem> ans;
+
+  tag = "music";
   LOG(INFO) << tag << ":";
-  std::vector<ScoreItem> ans = tag2vec.MostSimilar(tag2vec.TagVec(tag), 10);
+  ans = tag2vec.MostSimilar(tag2vec.TagVec(tag), 10);
   PrintScoreItemVec(ans);
 
   tag = "food";
