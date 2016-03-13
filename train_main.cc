@@ -11,7 +11,7 @@ namespace embedding {
 namespace {
 
 void Train(const std::string& input_path, const std::string& model_path) {
-  Tag2Vec tag2vec(300 /* layer_size */, 0 /* min_count */, 0 /* sample */,
+  Tag2Vec tag2vec(500 /* layer_size */, 0 /* min_count */, 0 /* sample */,
                   0.025 /* init_alpha */, 0.0001 /* min_alpha */);
   std::ifstream fin(input_path);
   StandardDocumentIterator iterator(&fin);

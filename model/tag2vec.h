@@ -56,7 +56,7 @@ class Tag2Vec final : public Model {
   void DownSample(std::vector<const Vocabulary::Item*>* words) const;
 
  private:
-  size_t layer_size_ = 300;
+  size_t layer_size_ = 500;
   size_t min_count_ = 0;
   float sample_ = 0;
   float init_alpha_ = 0.025;

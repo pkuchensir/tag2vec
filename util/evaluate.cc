@@ -39,15 +39,15 @@ void Evaluate(Model* model, const std::vector<Document>& test_data) {
     #pragma omp atomic update
     num_total += test_data[i].tags().size();
 
-    static const size_t DISPLAY_NUM = 10000;
+    static const size_t DISPLAY_NUM = 1000;
     if (num_total / DISPLAY_NUM >
         (num_total - test_data[i].tags().size()) / DISPLAY_NUM) {
-      LOG(INFO) << "Processed " << num_total
-                << " words. p@1=" << (float)num_correct / num_total;
+      LOG(INFO) << "Suggested " << num_total
+                << " tags. p@1=" << (float)num_correct / num_total;
     }
   }
-  LOG(INFO) << "Tested " << num_total
-            << ". p@1=" << (float)num_correct / num_total;
+  LOG(INFO) << "Suggested " << num_total
+            << " tags. p@1=" << (float)num_correct / num_total;
 }
 
 
