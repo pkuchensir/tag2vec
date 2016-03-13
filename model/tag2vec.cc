@@ -129,6 +129,10 @@ void Tag2Vec::Train(DocumentIterator* iterator, size_t iter) {
   has_trained_ = true;
 }
 
+std::vector<ScoreItem> Tag2Vec::Suggest(const std::vector<std::string>& words) {
+  return MostSimilar(Infer(words, 10), 1);
+}
+
 bool Tag2Vec::ContainsTag(const std::string& tag) const {
   return tag_vocab_.item(tag);
 }

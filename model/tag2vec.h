@@ -11,12 +11,13 @@
 #include "document/tag.h"
 #include "document/vocabulary.h"
 #include "document/word.h"
+#include "model/model.h"
 #include "util/huffman.h"
 
 namespace deeplearning {
 namespace embedding {
 
-class Tag2Vec final {
+class Tag2Vec final : public Model {
  private:
   class Random;
 
@@ -32,7 +33,10 @@ class Tag2Vec final {
   ~Tag2Vec();
 
   void Train(const std::vector<Document>& documents, size_t iter);
-  void Train(DocumentIterator* iterator, size_t iter);
+  void Train(DocumentIterator* iterator, size_t iter) override;
+
+  std::vector<ScoreItem> Suggest(
+      const std::vector<std::string>& words) override;
 
   bool ContainsTag(const std::string& tag) const;
   Eigen::VectorXf TagVec(const std::string& tag) const;
@@ -41,7 +45,7 @@ class Tag2Vec final {
 
   Eigen::RowVectorXf Infer(const std::vector<std::string>& words, size_t iter);
 
-  void Write(std::ostream* out) const;
+  void Write(std::ostream* out) const override;
   static void Read(std::istream* in, Tag2Vec* tag2vec);
 
   std::string ConfigString() const;
