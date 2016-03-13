@@ -39,8 +39,7 @@ class Tag2Vec final {
   std::vector<ScoreItem> MostSimilar(const Eigen::VectorXf& v,
                                      size_t limit) const;
 
-  Eigen::RowVectorXf Infer(const std::vector<std::string>& words,
-                           size_t iter) const;
+  Eigen::RowVectorXf Infer(const std::vector<std::string>& words, size_t iter);
 
   void Write(std::ostream* out) const;
   static void Read(std::istream* in, Tag2Vec* tag2vec);
@@ -50,7 +49,7 @@ class Tag2Vec final {
  private:
   void Initialize();
 
-  void DownSample(std::vector<const Vocabulary::Item*>* words);
+  void DownSample(std::vector<const Vocabulary::Item*>* words) const;
 
  private:
   size_t layer_size_ = 300;

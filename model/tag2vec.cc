@@ -49,18 +49,23 @@ void Tag2Vec::Train(const std::vector<Document>& documents, size_t iter) {
   BuildWordVocabulary(&iterator, min_count_, sample_, &word_vocab_);
   word_huffman_.Build(word_vocab_.items());
 
-  CHECK(tag_vocab_.items_size() >= 1) << "Size of tag_vocab should be at least 1.";
-  CHECK(word_vocab_.items_size() >= 1) << "Size of word_vocab should be at least 1.";
+  CHECK(tag_vocab_.items_size() >= 1)
+      << "Size of tag_vocab should be at least 1.";
+  CHECK(word_vocab_.items_size() >= 1)
+      << "Size of word_vocab should be at least 1.";
 
   LOG(INFO) << "Vocabularies for words and tags have been built.";
 
   // Initializes weights.
   std::uniform_real_distribution<float> dist(-0.5, 0.5);
-  auto uniform = [&dist, this](size_t) { return dist(this->random_->engine()); };
+  static const auto uniform =
+      [&dist, this](size_t) { return dist(this->random_->engine()); };
   size_t tag_dim = tag_vocab_.items_size();
-  tagi_ = RMatrixXf::NullaryExpr(tag_dim, layer_size_, uniform) / (float)tag_dim;
+  tagi_ =
+      RMatrixXf::NullaryExpr(tag_dim, layer_size_, uniform) / (float)tag_dim;
   size_t word_dim = word_vocab_.items_size() - 1;
-  wordo_ = RMatrixXf::NullaryExpr(word_dim, layer_size_, uniform) / (float)word_dim;
+  wordo_ =
+      RMatrixXf::NullaryExpr(word_dim, layer_size_, uniform) / (float)word_dim;
 
   LOG(INFO) << "Weights have been initialized.";
 
@@ -94,9 +99,9 @@ void Tag2Vec::Train(const std::vector<Document>& documents, size_t iter) {
 
       #pragma omp atomic update
       num_words += document.words().size();
-      const float next_alpha =
-          init_alpha_ -
-          (init_alpha_ - min_alpha_) * num_words / word_vocab_.num_original() / iter;
+      float next_alpha = init_alpha_ -
+                         (init_alpha_ - min_alpha_) * num_words /
+                             word_vocab_.num_original() / iter;
       alpha = std::max(min_alpha_, next_alpha);
 
       static const size_t DISPLAY_NUM = 100000;
@@ -152,8 +157,28 @@ std::vector<ScoreItem> Tag2Vec::MostSimilar(const Eigen::VectorXf& v,
 }
 
 Eigen::RowVectorXf Tag2Vec::Infer(const std::vector<std::string>& words,
-                                  size_t iter) const {
-  Eigen::RowVectorXf ans;
+                                  size_t iter) {
+  std::uniform_real_distribution<float> dist(-0.5, 0.5);
+  static const auto uniform =
+      [&dist, this](size_t) { return dist(this->random_->engine()); };
+  Tag2Vec::RMatrixXf ans =
+      Tag2Vec::RMatrixXf::NullaryExpr(1, tagi_.cols(), uniform);
+
+  // Gets words.
+  std::vector<const Vocabulary::Item*> word_vec;
+  GetVocabularyItemVec(word_vocab_, words, &word_vec);
+  DownSample(&word_vec);
+  float alpha = init_alpha_;
+
+  for (size_t i = 0; i < iter; ++i) {
+    for (const Vocabulary::Item* word : word_vec) {
+      TrainSgPair(tagi_.row(0), wordo_, word_huffman_.codes(word->index()),
+                  word_huffman_.points(word->index()), alpha, true);
+      float next_alpha = init_alpha_ - (init_alpha_ - min_alpha_) / iter;
+      alpha = std::max(min_alpha_, next_alpha);
+    }
+  }
+
   return ans;
 }
 
@@ -203,14 +228,16 @@ std::string Tag2Vec::ConfigString() const {
 }
 
 void Tag2Vec::Initialize() {
-  CHECK(min_alpha_ < init_alpha_) << "init_alpha should not be less than min_alpha.";
+  CHECK(min_alpha_ < init_alpha_)
+      << "init_alpha should not be less than min_alpha.";
   CHECK(0 < min_alpha_) << "min_alpha should not be greater than min_alpha.";
   CHECK(init_alpha_ <= 0.1) << "init_alpha should be no more than 0.01.";
-  CHECK(0 <= sample_ && sample_ <= 0.01) << "sample should not be within [0, 0.01].";
+  CHECK(0 <= sample_ && sample_ <= 0.01)
+      << "sample should not be within [0, 0.01].";
   if (random_ == nullptr) random_ = new Random;
 }
 
-void Tag2Vec::DownSample(std::vector<const Vocabulary::Item*>* words) {
+void Tag2Vec::DownSample(std::vector<const Vocabulary::Item*>* words) const {
   size_t len = 0;
   for (size_t i = 0; i < words->size(); ++i) {
     float probability = ((Word*)(*words)[i])->probability();
