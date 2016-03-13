@@ -133,17 +133,20 @@ Eigen::VectorXf Tag2Vec::TagVec(const std::string& tag) const {
 
 std::vector<ScoreItem> Tag2Vec::MostSimilar(const Eigen::VectorXf& v,
                                             size_t limit) const {
+  static const auto greater_score_item =
+      [](const ScoreItem& si1, const ScoreItem& si2) { return si1 > si2; };
   std::vector<ScoreItem> ans;
   for (const Vocabulary::Item* item : tag_vocab_.items()) {
     RMatrixXf::ConstRowXpr tagv = tagi_.row(item->index());
     float score = v.dot(tagv) / v.norm() / tagv.norm();
     ans.emplace_back(item->text(), score);
-    std::push_heap(ans.begin(), ans.end());
+    std::push_heap(ans.begin(), ans.end(), greater_score_item);
     if (ans.size() > limit) {
-      std::pop_heap(ans.begin(), ans.end());
+      std::pop_heap(ans.begin(), ans.end(), greater_score_item);
       ans.pop_back();
     }
   }
+  std::sort(ans.begin(), ans.end(), greater_score_item);
   return ans;
 }
 
