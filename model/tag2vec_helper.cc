@@ -44,13 +44,14 @@ void BuildWordVocabulary(DocumentIterator* iterator, size_t min_count,
   }
   vocabulary->Build(min_count);
 
-  if (sample < 0 || sample > 1) sample = 0;
-  float threshold = sample * vocabulary->num_retained();
-  for (size_t i = 0; i < vocabulary->items_size(); ++i) {
-    Word* word = (Word*)vocabulary->item(i);
-    float probability =
-        (std::sqrt(word->count() / threshold) + 1) * (threshold / word->count());
-    word->set_probability(std::min(probability, 1.0f));
+  if (sample) {
+    float threshold = sample * vocabulary->num_retained();
+    for (size_t i = 0; i < vocabulary->items_size(); ++i) {
+      Word* word = (Word*)vocabulary->item(i);
+      float probability =
+          (std::sqrt(word->count() / threshold) + 1) * (threshold / word->count());
+      word->set_probability(std::min(probability, 1.0f));
+    }
   }
 }
 

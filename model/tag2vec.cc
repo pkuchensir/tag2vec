@@ -203,6 +203,9 @@ std::string Tag2Vec::ConfigString() const {
 
 void Tag2Vec::Initialize() {
   CHECK(min_alpha_ < init_alpha_) << "init_alpha should not be less than min_alpha.";
+  CHECK(0 < min_alpha_) << "min_alpha should not be greater than min_alpha.";
+  CHECK(init_alpha_ <= 0.1) << "init_alpha should be no more than 0.01.";
+  CHECK(0 <= sample_ && sample_ <= 0.01) << "sample should not be within [0, 0.01].";
   if (random_ == nullptr) random_ = new Random;
 }
 
