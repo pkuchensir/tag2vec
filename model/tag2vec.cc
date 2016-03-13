@@ -97,13 +97,14 @@ void Tag2Vec::Train(const std::vector<Document>& documents, size_t iter) {
       const float next_alpha =
           init_alpha_ -
           (init_alpha_ - min_alpha_) * num_words / word_vocab_.num_original() / iter;
-      alpha = std::max(alpha, next_alpha);
+      alpha = std::max(min_alpha_, next_alpha);
 
       static const size_t DISPLAY_NUM = 100000;
       if (num_words / DISPLAY_NUM >
           (num_words - document.words().size()) / DISPLAY_NUM) {
         LOG(INFO) << "Iter" << t << ": Processed " << num_words << "/"
-                  << word_vocab_.num_original() * iter << " words.";
+                  << word_vocab_.num_original() * iter
+                  << " words. [alpha=" << alpha << "].";
       }
     }
     LOG(INFO) << "Iteration " << t << " has finished.";
