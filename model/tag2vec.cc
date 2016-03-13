@@ -99,10 +99,9 @@ void Tag2Vec::Train(const std::vector<Document>& documents, size_t iter) {
 
       #pragma omp atomic update
       num_words += document.words().size();
-      float next_alpha = init_alpha_ -
-                         (init_alpha_ - min_alpha_) * num_words /
-                             word_vocab_.num_original() / iter;
-      alpha = std::max(min_alpha_, next_alpha);
+      alpha = init_alpha_ -
+              (init_alpha_ - min_alpha_) * num_words /
+                  word_vocab_.num_original() / iter;
 
       static const size_t DISPLAY_NUM = 100000;
       if (num_words / DISPLAY_NUM >
@@ -172,12 +171,12 @@ Eigen::RowVectorXf Tag2Vec::Infer(const std::vector<std::string>& words,
   DownSample(&word_vec);
   float alpha = init_alpha_;
 
-  for (size_t i = 0; i < iter; ++i) {
+  for (size_t t = 0; t < iter; ++t) {
     for (const Vocabulary::Item* word : word_vec) {
       TrainSgPair(ans.row(0), wordo_, word_huffman_.codes(word->index()),
                   word_huffman_.points(word->index()), alpha, false);
     }
-    alpha = init_alpha_ - (init_alpha_ - min_alpha_) * (i + 1) / iter;
+    alpha = init_alpha_ - (init_alpha_ - min_alpha_) * (t + 1) / iter;
   }
   return ans;
 }
