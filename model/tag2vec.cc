@@ -159,10 +159,8 @@ std::vector<ScoreItem> Tag2Vec::MostSimilar(const Eigen::VectorXf& v,
 Eigen::RowVectorXf Tag2Vec::Infer(const std::vector<std::string>& words,
                                   size_t iter) {
   std::uniform_real_distribution<float> dist(-0.5, 0.5);
-  static const auto uniform =
-      [&dist, this](size_t) { return dist(this->random_->engine()); };
-  Tag2Vec::RMatrixXf ans =
-      Tag2Vec::RMatrixXf::NullaryExpr(1, tagi_.cols(), uniform);
+  Tag2Vec::RMatrixXf ans(1, tagi_.cols());
+  ans.setZero();
 
   // Gets words.
   std::vector<const Vocabulary::Item*> word_vec;
@@ -172,13 +170,11 @@ Eigen::RowVectorXf Tag2Vec::Infer(const std::vector<std::string>& words,
 
   for (size_t i = 0; i < iter; ++i) {
     for (const Vocabulary::Item* word : word_vec) {
-      TrainSgPair(tagi_.row(0), wordo_, word_huffman_.codes(word->index()),
-                  word_huffman_.points(word->index()), alpha, true);
-      float next_alpha = init_alpha_ - (init_alpha_ - min_alpha_) / iter;
-      alpha = std::max(min_alpha_, next_alpha);
+      TrainSgPair(ans.row(0), wordo_, word_huffman_.codes(word->index()),
+                  word_huffman_.points(word->index()), alpha, false);
     }
+    alpha = init_alpha_ - (init_alpha_ - min_alpha_) * (i + 1) / iter;
   }
-
   return ans;
 }
 

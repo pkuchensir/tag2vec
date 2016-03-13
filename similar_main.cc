@@ -6,6 +6,7 @@
 #include "model/tag2vec.h"
 #include "document/score_item.h"
 #include "util/logging.h"
+#include "util/util.h"
 
 namespace deeplearning {
 namespace embedding {
@@ -48,6 +49,17 @@ void Test(const std::string& model_path) {
   tag = "organic";
   LOG(INFO) << tag << ":";
   ans = tag2vec.MostSimilar(tag2vec.TagVec(tag), 10);
+  PrintScoreItemVec(ans);
+
+  std::string words;
+  words = "flashmob experiment arkansas keeping entertained assembly";
+  LOG(INFO) << words << ":";
+  ans = tag2vec.MostSimilar(tag2vec.Infer(util::Split(words, " "), 10), 10);
+  PrintScoreItemVec(ans);
+
+  words = "rib shack totally open years construction finally explore ri";
+  LOG(INFO) << words << ":";
+  ans = tag2vec.MostSimilar(tag2vec.Infer(util::Split(words, " "), 10), 10);
   PrintScoreItemVec(ans);
 }
 
